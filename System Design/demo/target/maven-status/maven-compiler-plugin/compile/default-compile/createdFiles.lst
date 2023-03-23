@@ -1,0 +1,7 @@
+com\example\demo\service\URLService.class
+com\example\demo\UrlFeederServiceApplication.class
+com\example\demo\dao\URLRepository.class
+com\example\demo\model\URL.class
+com\example\demo\resources\URLResource.class
+com\example\demo\common\Constants.class
+com\example\demo\service\KafkaService.class
