@@ -27,10 +27,12 @@ public class URLResource {
 
     @PostMapping("/post")
     public ResponseEntity<Void> submitUrl(@RequestBody URL url){
+        long startTime = System.currentTimeMillis();
         url.setId(Constants.URL_UUID_PREFIX+UUID.randomUUID().toString());
         url.setCreatedDate(new Timestamp(System.currentTimeMillis()));
         urlService.save(url);
         log.info("url"+url);
+        log.info("Request processed in {} mills " + (System.currentTimeMillis() - startTime));
         return ResponseEntity.ok().build();
     }
 }
