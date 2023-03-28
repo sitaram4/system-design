@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
@@ -33,41 +34,42 @@ public class URLService {
     private KafkaService kafkaService;
 
     @Async
-    public void save(URL url){
-        try{
-            log.info("------- {} " + Thread.currentThread().getName());
-            URL existingUrl = urlRepository.findByUrl(url.getUrl());
-            Optional<String> optContentType = Optional.empty();
-            if(existingUrl != null){
+    public void save(Set<URL> urls){
+        for(URL url:urls) {
+            try {
+                log.info("------- {} " + Thread.currentThread().getName());
+                URL existingUrl = urlRepository.findByUrl(url.getUrl());
+                Optional<String> optContentType = Optional.empty();
+                if (existingUrl != null) {
                     log.info("URL already processed on {} " + existingUrl.getUrl() + existingUrl.getLastProcessed());
                     return;
 
-            }
+                }
 
-            url.setLastProcessed(new Timestamp(System.currentTimeMillis()));
-            url.setTimesProcessed(1);
-            optContentType = getContentType(url.getUrl());
-            if(optContentType.isEmpty()){
-                log.warn("Content type not found for URL: {}" + url.getUrl());
-                return;
+                url.setLastProcessed(new Timestamp(System.currentTimeMillis()));
+                url.setTimesProcessed(1);
+                optContentType = getContentType(url.getUrl());
+                if (optContentType.isEmpty()) {
+                    log.warn("Content type not found for URL: {}" + url.getUrl());
+                    return;
+                }
+                Optional<String> optTopic = getTopicByContentType(optContentType.get());
+                log.info("herhe");
+                if (optTopic.isEmpty()) {
+                    log.warn("Content type {} not mapped" + optContentType.get());
+                    return;
+                }
+                String topic = optTopic.get();
+                if (url.getContentType() == null || url.getContentType().isEmpty()) {
+                    url.setContentType(optContentType.get());
+                }
+                log.info("URL: {} sending to topic :{} " + url.getUrl() + topic);
+                kafkaService.send(topic, url.getUrl());
+                urlRepository.save(url);
+            } catch (Exception e) {
+                log.error("Exception: " + e);
             }
-            Optional<String> optTopic = getTopicByContentType(optContentType.get());
-            log.info("herhe");
-            if(optTopic.isEmpty()){
-                log.warn("Content type {} not mapped" + optContentType.get());
-                return;
-            }
-            String topic = optTopic.get();
-            if(url.getContentType() == null || url.getContentType().isEmpty()){
-                url.setContentType(optContentType.get());
-            }
-            log.info("URL: {} sending to topic :{} " + url.getUrl() + topic);
-            kafkaService.send(topic,url.getUrl());
-            urlRepository.save(url);
-        }catch (Exception e){
-            log.error("Exception: " + e);
         }
-
     }
 
     private Optional<String> getContentType(String path) throws IOException{

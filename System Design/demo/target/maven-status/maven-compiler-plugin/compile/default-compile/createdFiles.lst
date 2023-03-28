@@ -1,1 +1,10 @@
+com/example/demo/config/URLProcessorThreadPoolConfig.class
 com/example/demo/model/URL$URLBuilder.class
+com/example/demo/model/URL.class
+com/example/demo/dao/URLRepository.class
+com/example/demo/common/Constants.class
+com/example/demo/service/URLService.class
+com/example/demo/resources/URLResource$1.class
+com/example/demo/resources/URLResource.class
+com/example/demo/service/KafkaService.class
+com/example/demo/UrlFeederServiceApplication.class
