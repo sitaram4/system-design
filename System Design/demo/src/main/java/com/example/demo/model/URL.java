@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 
 import java.sql.Timestamp;
@@ -17,9 +16,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "url")
+//@Table("url")
 public class URL {
     @Id
     String id;
+
+    @Column(name="url")
     String url;
 
     @Column(name = "times_processed")

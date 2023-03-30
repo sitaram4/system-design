@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface URLRepository extends JpaRepository<URL,String> {
 
@@ -12,3 +14,17 @@ public interface URLRepository extends JpaRepository<URL,String> {
     URL findByUrl(String url);
 
 }
+
+//import com.example.demo.model.URL;
+//import org.springframework.data.cassandra.repository.AllowFiltering;
+//import org.springframework.data.cassandra.repository.CassandraRepository;
+//import org.springframework.stereotype.Repository;
+//import java.util.Optional;
+//
+//
+//@Repository
+//public interface URLRepository extends CassandraRepository<URL,String> {
+//    @AllowFiltering
+//    Optional<URL> findByUrl(String url);
+//
+//}

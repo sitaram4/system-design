@@ -33,17 +33,27 @@ public class URLService {
     @Autowired
     private KafkaService kafkaService;
 
+    @Autowired
+    private CacheService cacheService;
+
     @Async
     public void save(Set<URL> urls){
         for(URL url:urls) {
             try {
                 log.info("------- {} " + Thread.currentThread().getName());
+                if(cacheService.get(url.getUrl())!=null){
+                    return ;
+                }
+//                Optional<URL> existingUrlOpt = urlRepository.findByUrl(url.getUrl());
+//                Optional<URL> existingUrlOpt = null;
                 URL existingUrl = urlRepository.findByUrl(url.getUrl());
                 Optional<String> optContentType = Optional.empty();
                 if (existingUrl != null) {
+//                    URL existingUrl = existingUrlOpt.get();
+                    //something is in database but not in cache
                     log.info("URL already processed on {} " + existingUrl.getUrl() + existingUrl.getLastProcessed());
+                    cacheService.set(existingUrl);
                     return;
-
                 }
 
                 url.setLastProcessed(new Timestamp(System.currentTimeMillis()));
@@ -54,7 +64,7 @@ public class URLService {
                     return;
                 }
                 Optional<String> optTopic = getTopicByContentType(optContentType.get());
-                log.info("herhe");
+                log.info("here");
                 if (optTopic.isEmpty()) {
                     log.warn("Content type {} not mapped" + optContentType.get());
                     return;
@@ -64,7 +74,9 @@ public class URLService {
                     url.setContentType(optContentType.get());
                 }
                 log.info("URL: {} sending to topic :{} " + url.getUrl() + topic);
-                kafkaService.send(topic, url.getUrl());
+//                kafkaService.send(topic, url.getUrl()); // comment for testing
+                //save in cache
+                cacheService.set(url);
                 urlRepository.save(url);
             } catch (Exception e) {
                 log.error("Exception: " + e);
