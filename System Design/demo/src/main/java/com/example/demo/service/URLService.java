@@ -32,7 +32,6 @@ public class URLService {
 
     @Autowired
     private KafkaService kafkaService;
-
     @Autowired
     private CacheService cacheService;
 
@@ -44,16 +43,18 @@ public class URLService {
                 if(cacheService.get(url.getUrl())!=null){
                     return ;
                 }
-//                Optional<URL> existingUrlOpt = urlRepository.findByUrl(url.getUrl());
-//                Optional<URL> existingUrlOpt = null;
-                URL existingUrl = urlRepository.findByUrl(url.getUrl());
+                Optional<URL> existingURLOpt = urlRepository.findByUrl(url.getUrl());
                 Optional<String> optContentType = Optional.empty();
-                if (existingUrl != null) {
-//                    URL existingUrl = existingUrlOpt.get();
-                    //something is in database but not in cache
-                    log.info("URL already processed on {} " + existingUrl.getUrl() + existingUrl.getLastProcessed());
-                    cacheService.set(existingUrl);
-                    return;
+                if (!existingURLOpt.isEmpty()) {
+                    URL existingURL = existingURLOpt.get();
+                    // we are going to allow processing if the URL has been processed more than 7 days ago
+                    if (existingURL.getLastProcessed().getTime() + TimeUnit.DAYS.toMillis(coolDown) > System.currentTimeMillis()) {
+                        log.info("URL {} already processed on {}"+ existingURL.getUrl(), existingURL.getLastProcessed());
+                        cacheService.set(existingURL);
+                        return;
+                    }
+                    url = existingURL;
+                    optContentType = Optional.of(existingURL.getContentType());
                 }
 
                 url.setLastProcessed(new Timestamp(System.currentTimeMillis()));
@@ -74,7 +75,7 @@ public class URLService {
                     url.setContentType(optContentType.get());
                 }
                 log.info("URL: {} sending to topic :{} " + url.getUrl() + topic);
-//                kafkaService.send(topic, url.getUrl()); // comment for testing
+                kafkaService.send(topic, url.getUrl()); // comment for testing
                 //save in cache
                 cacheService.set(url);
                 urlRepository.save(url);

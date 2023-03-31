@@ -38,16 +38,20 @@
 			<version>1.0.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-cassandra</artifactId>
+		</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>1.18.26</version>
 			</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
@@ -60,10 +64,11 @@
 			<artifactId>lettuce-core</artifactId>
 			<version>6.2.3.RELEASE</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-data-cassandra</artifactId>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>2.1.9</version>
+		</dependency>
 	</dependencies>
 
 	<build>
