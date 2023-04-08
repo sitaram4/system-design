@@ -16,6 +16,7 @@ services:
       - "9092:9092"
     environment:
       HOSTNAME_COMMAND: "ifconfig eth0 | grep 'inet ' | awk '{print $$2}'"
+#      gateway address of the bridge
       KAFKA_ZOOKEEPER_CONNECT: 172.17.0.1:2181
     depends_on:
       - zookeeper

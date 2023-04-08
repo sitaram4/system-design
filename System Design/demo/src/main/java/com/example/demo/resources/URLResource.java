@@ -32,6 +32,7 @@ public class URLResource {
         long startTime = System.currentTimeMillis();
         url.setId(Constants.URL_UUID_PREFIX+UUID.randomUUID().toString());
         url.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        url.setTimesProcessed(0);
         urlService.save(new HashSet<>(){{add(url);}});
         log.info("url"+url);
         log.info("Request processed in {} mills " + (System.currentTimeMillis() - startTime));

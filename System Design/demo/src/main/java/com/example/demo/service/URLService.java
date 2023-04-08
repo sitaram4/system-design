@@ -59,6 +59,7 @@ public class URLService {
 
                 url.setLastProcessed(new Timestamp(System.currentTimeMillis()));
                 url.setTimesProcessed(1);
+                log.info("here after query empty!!!");
                 optContentType = getContentType(url.getUrl());
                 if (optContentType.isEmpty()) {
                     log.warn("Content type not found for URL: {}" + url.getUrl());
@@ -75,7 +76,7 @@ public class URLService {
                     url.setContentType(optContentType.get());
                 }
                 log.info("URL: {} sending to topic :{} " + url.getUrl() + topic);
-                kafkaService.send(topic, url.getUrl()); // comment for testing
+                kafkaService.send(topic, url); // comment for testing
                 //save in cache
                 cacheService.set(url);
                 urlRepository.save(url);
@@ -86,8 +87,10 @@ public class URLService {
     }
 
     private Optional<String> getContentType(String path) throws IOException{
+
         java.net.URL url = new java.net.URL(path);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        log.info("getContentType:   "+  path);
         connection.setRequestMethod("HEAD");
         connection.connect();
         return Optional.of(connection.getContentType());
